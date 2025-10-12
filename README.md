@@ -1,5 +1,3 @@
-# Unit Testing HW — Task 1 (Health Status)
+# Классы наследования методы
 
-![CI](https://github.com/<your-username>/hw-unit-1-health/actions/workflows/ci.yml/badge.svg)
-
-Функция определения статуса здоровья персонажа + 100% покрытие по строкам и ESLint без ошибок.
+![CI](https://github.com/ZinnatullinDA/class_inherit_2/actions/workflows/main.yml/badge.svg)
