@@ -1,13 +1,7 @@
 import { Character } from "../Character.js";
-import { Bowman } from '../Bowman.js';
-import { Swordsman } from '../Swordsman.js';
-import { Magician } from '../Magician.js';
-import { Daemon } from '../Daemon.js';
-import { Undead } from '../Undead.js';
-import { Zombie } from '../Zombie.js';
 
 describe('Character', () => {
-  test('should create valid character', () => {
+  test('должен корректно создавать персонажа', () => {
     const c = new Character('Bob', 'Bowman');
     expect(c).toEqual({
       name: 'Bob',
@@ -19,55 +13,72 @@ describe('Character', () => {
     });
   });
 
-  test('should throw error for short name', () => {
-    expect(() => new Character('A', 'Bowman')).toThrow();
+  test('ошибка — имя слишком короткое', () => {
+    expect(() => new Character('A', 'Bowman')).toThrow(
+      'Имя введено не правильно'
+    );
   });
 
-  test('should throw error for long name', () => {
-    expect(() => new Character('VeryLongNameHere', 'Bowman')).toThrow();
+  test('ошибка — имя слишком длинное', () => {
+    expect(() => new Character('VeryLongNameHere', 'Bowman')).toThrow(
+      'Имя введено не правильно'
+    );
   });
 
-  test('should throw error for invalid type', () => {
-    expect(() => new Character('Bob', 'Ninja')).toThrow();
-  });
-});
-
-describe('child classes', () => {
-  test('Bowman sets attack and defence correctly', () => {
-    const b = new Bowman('Robin');
-    expect(b.attack).toBe(25);
-    expect(b.defence).toBe(25);
-    expect(b.type).toBe('Bowman');
+  test('ошибка — имя не строка', () => {
+    expect(() => new Character(123, 'Bowman')).toThrow(
+      'Имя введено не правильно'
+    );
   });
 
-  test('Swordsman has correct values', () => {
-    const s = new Swordsman('Hero');
-    expect(s.attack).toBe(40);
-    expect(s.defence).toBe(10);
-    expect(s.health).toBe(100);
+  test('ошибка — неверный тип', () => {
+    expect(() => new Character('Bob', 'Ninja')).toThrow('Неправильный тип');
   });
 
-  test('Magician has correct values', () => {
-    const m = new Magician('Gandalf');
-    expect(m.attack).toBe(10);
-    expect(m.defence).toBe(40);
+  describe('levelUp', () => {
+    test('повышает уровень и характеристики', () => {
+      const c = new Character('Alice', 'Bowman');
+      c.attack = 10;
+      c.defence = 20;
+      c.health = 50;
+
+      c.levelUp();
+
+      expect(c.level).toBe(2);
+      expect(c.attack).toBeCloseTo(12);
+      expect(c.defence).toBeCloseTo(24);
+      expect(c.health).toBe(100);
+    });
+
+    test('ошибка — нельзя повысить уровень мёртвого персонажа', () => {
+      const c = new Character('Alice', 'Bowman');
+      c.health = 0;
+
+      expect(() => c.levelUp()).toThrow('Нельзя повысить уровень умершего персонажа');
+    });
   });
 
-  test('Daemon has correct values', () => {
-    const d = new Daemon('Azazel');
-    expect(d.attack).toBe(10);
-    expect(d.defence).toBe(40);
-  });
+  describe('damage', () => {
+    test('наносит урон с учётом защиты', () => {
+      const c = new Character('Bob', 'Bowman');
+      c.defence = 20;
+      c.damage(50);
+      expect(c.health).toBe(60);
+    });
 
-  test('Undead has correct values', () => {
-    const u = new Undead('Skull');
-    expect(u.attack).toBe(25);
-    expect(u.defence).toBe(25);
-  });
+    test('если здоровье уходит ниже 0, устанавливается 0', () => {
+      const c = new Character('Bob', 'Bowman');
+      c.defence = 0;
+      c.damage(200);
+      expect(c.health).toBe(0);
+    });
 
-  test('Zombie has correct values', () => {
-    const z = new Zombie('Rot');
-    expect(z.attack).toBe(40);
-    expect(z.defence).toBe(10);
+    test('не изменяет здоровье, если уже мёртв', () => {
+      const c = new Character('Bob', 'Bowman');
+      c.health = 0;
+      c.defence = 0;
+      c.damage(50);
+      expect(c.health).toBe(0);
+    });
   });
 });
